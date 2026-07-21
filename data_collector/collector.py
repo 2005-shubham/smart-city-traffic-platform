@@ -44,7 +44,7 @@ def maybe_generate_accident(road_id):
         return None
 
 
-def fetch_weather(city="Jaipur"):
+def fetch_weather(city="Alwar"):
     api_key = os.getenv("OPENWEATHER_API_KEY")
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
 
@@ -119,7 +119,7 @@ while True:
             if accident_data:
                 insert_accident(accident_data)
 
-        weather_data = fetch_weather("Jaipur")
+        weather_data = fetch_weather("Alwar")
         insert_weather(weather_data)
 
         print("Waiting 10 seconds before next collection...\n")
