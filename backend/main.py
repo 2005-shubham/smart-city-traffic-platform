@@ -1,0 +1,81 @@
+from fastapi import FastAPI
+from dotenv import load_dotenv
+import psycopg2
+import os
+
+load_dotenv()
+
+app = FastAPI()
+
+def get_connection():
+    connection = psycopg2.connect(
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
+    )
+    return connection
+
+@app.get("/")
+def home():
+    return {"message": "Smart City Traffic API is running!"}
+
+@app.get("/roads")
+def get_roads():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT road_id, road_name, latitude, longitude, road_type FROM roads;")
+    rows = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    roads = []
+    for row in rows:
+        roads.append({
+            "road_id": row[0],
+            "road_name": row[1],
+            "latitude": float(row[2]),
+            "longitude": float(row[3]),
+            "road_type": row[4]
+        })
+    return roads
+
+@app.get("/traffic-summary")
+def get_traffic_summary():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT road_id, avg_speed, avg_vehicle_count, total_readings, last_updated FROM road_traffic_summary;")
+    rows = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    summary = []
+    for row in rows:
+        summary.append({
+            "road_id": row[0],
+            "avg_speed": float(row[1]),
+            "avg_vehicle_count": float(row[2]),
+            "total_readings": row[3],
+            "last_updated": row[4].isoformat()
+        })
+    return summary
+
+@app.get("/accidents")
+def get_accidents():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT accident_id, road_id, occurred_at, severity FROM accidents;")
+    rows = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    accidents = []
+    for row in rows:
+        accidents.append({
+            "accident_id": row[0],
+            "road_id": row[1],
+            "occurred_at": row[2].isoformat(),
+            "severity": row[3]
+        })
+    return accidents
