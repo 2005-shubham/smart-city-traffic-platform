@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import psycopg2
 import os
@@ -6,6 +7,13 @@ import os
 load_dotenv()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_connection():
     connection = psycopg2.connect(
@@ -79,3 +87,21 @@ def get_accidents():
             "severity": row[3]
         })
     return accidents
+
+@app.get("/weather-latest")
+def get_weather_latest():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT temperature, condition, visibility, recorded_at FROM weather ORDER BY recorded_at DESC LIMIT 1;")
+    row = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if row:
+        return {
+            "temperature": float(row[0]),
+            "condition": row[1],
+            "visibility": float(row[2]),
+            "recorded_at": row[3].isoformat()
+        }
+    return None

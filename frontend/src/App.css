@@ -1,0 +1,321 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 32px;
+}
+
+.road-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.road-card:hover {
+  background: var(--bg-surface-hover);
+  transform: translateY(-2px);
+}
+
+.road-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+}
+
+.road-card.level-low::before { background: var(--accent-teal); }
+.road-card.level-medium::before { background: var(--accent-amber); }
+.road-card.level-high::before { background: var(--accent-red); }
+
+.road-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.road-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot-low { background: var(--accent-teal); box-shadow: 0 0 8px var(--accent-teal); }
+.dot-medium { background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); }
+.dot-high { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+
+.road-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-unit {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.road-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.road-type {
+  padding: 3px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.topbar-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+}
+
+.topbar-status {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent-teal);
+  letter-spacing: 0.05em;
+}
+
+.accident-card {
+  border: 1px solid var(--border-subtle);
+}
+
+.accident-card::before {
+  background: var(--accent-red);
+}
+
+.empty-state {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.accident-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.accident-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.accident-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.accident-severity {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.severity-minor .accident-severity {
+  background: rgba(62, 201, 167, 0.15);
+  color: var(--accent-teal);
+}
+
+.severity-major .accident-severity {
+  background: rgba(244, 168, 60, 0.15);
+  color: var(--accent-amber);
+}
+
+.severity-fatal .accident-severity {
+  background: rgba(232, 84, 61, 0.15);
+  color: var(--accent-red);
+}
+
+.accident-road {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.weather-card::before {
+  background: var(--accent-amber);
+}
+
+.pulse-track {
+  margin-top: 20px;
+  height: 3px;
+  background: rgba(231, 234, 240, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pulse-dash {
+  position: absolute;
+  height: 100%;
+  width: 30%;
+  border-radius: 2px;
+  animation: flow 2.5s ease-in-out infinite;
+}
+
+.dash-low { background: var(--accent-teal); animation-duration: 1.8s; }
+.dash-medium { background: var(--accent-amber); animation-duration: 2.6s; }
+.dash-high { background: var(--accent-red); animation-duration: 3.6s; }
+
+@keyframes flow {
+  0% { left: -30%; }
+  100% { left: 100%; }
+}
+
+.weather-icon {
+  position: relative;
+  width: 50px;
+  height: 44px;
+}
+
+/* Sun */
+.icon-sun .sun-core {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-amber);
+  box-shadow: 0 0 18px var(--accent-amber);
+  animation: sun-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes sun-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.85; }
+}
+
+/* Cloud */
+.icon-cloud {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: drift 4s ease-in-out infinite;
+}
+
+.cloud-body {
+  position: relative;
+  width: 44px;
+  height: 18px;
+  background: var(--text-primary);
+  border-radius: 0 0 13px 13px;
+  opacity: 0.92;
+}
+
+.cloud-bump {
+  position: absolute;
+  bottom: 4px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  opacity: 0.92;
+}
+
+.bump-1 {
+  width: 18px;
+  height: 18px;
+  left: 2px;
+}
+
+.bump-2 {
+  width: 26px;
+  height: 26px;
+  left: 13px;
+  bottom: 8px;
+}
+
+.bump-3 {
+  width: 17px;
+  height: 17px;
+  right: 2px;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+/* Rain */
+.icon-rain .rain-cloud {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  width: 32px;
+  height: 20px;
+  border-radius: 14px;
+  background: var(--text-muted);
+  opacity: 0.8;
+}
+
+.icon-rain .drop {
+  position: absolute;
+  top: 26px;
+  width: 3px;
+  height: 9px;
+  border-radius: 1.5px;
+  background: var(--accent-teal);
+  animation: fall 1s linear infinite;
+}
+
+.drop-1 { left: 8px; animation-delay: 0s; }
+.drop-2 { left: 18px; animation-delay: 0.3s; }
+.drop-3 { left: 28px; animation-delay: 0.6s; }
+
+@keyframes fall {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(10px); opacity: 0; }
+}
