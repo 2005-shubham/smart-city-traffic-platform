@@ -30,10 +30,21 @@ def home():
     return {"message": "Smart City Traffic API is running!"}
 
 @app.get("/roads")
-def get_roads():
+def get_roads(state: str = None, city: str = None):
     connection = get_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT road_id, road_name, latitude, longitude, road_type FROM roads;")
+
+    query = "SELECT road_id, road_name, latitude, longitude, road_type, city, state FROM roads WHERE 1=1"
+    params = []
+
+    if state:
+        query += " AND state = %s"
+        params.append(state)
+    if city:
+        query += " AND city = %s"
+        params.append(city)
+
+    cursor.execute(query, params)
     rows = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -45,9 +56,39 @@ def get_roads():
             "road_name": row[1],
             "latitude": float(row[2]),
             "longitude": float(row[3]),
-            "road_type": row[4]
+            "road_type": row[4],
+            "city": row[5],
+            "state": row[6]
         })
     return roads
+
+@app.get("/states")
+def get_states():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT DISTINCT state FROM roads ORDER BY state;")
+    rows = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return [row[0] for row in rows]
+
+
+@app.get("/cities")
+def get_cities(state: str = None):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    if state:
+        cursor.execute("SELECT DISTINCT city FROM roads WHERE state = %s ORDER BY city;", (state,))
+    else:
+        cursor.execute("SELECT DISTINCT city FROM roads ORDER BY city;")
+
+    rows = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return [row[0] for row in rows]
 
 @app.get("/traffic-summary")
 def get_traffic_summary():

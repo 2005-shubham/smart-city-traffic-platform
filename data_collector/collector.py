@@ -57,7 +57,7 @@ def fetch_weather(city="Alwar"):
 
     recorded_at = datetime.now()
 
-    return (recorded_at, temperature, condition, visibility)
+    return (city, recorded_at, temperature, condition, visibility)
 
 def insert_traffic_reading(data):
     connection = get_connection()
@@ -80,8 +80,8 @@ def insert_weather(data):
     cursor = connection.cursor()
 
     query = """
-        INSERT INTO weather (recorded_at, temperature, condition, visibility)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO weather (city, recorded_at, temperature, condition, visibility)
+        VALUES (%s, %s, %s, %s, %s)
     """
     cursor.execute(query, data)
 
@@ -108,9 +108,10 @@ def insert_accident(data):
     print("Accident inserted:", data)
 
 if __name__ == "__main__":
-        road_ids = [1, 2]  # humare roads table mein jo road_id hain
-    
-while True:
+    road_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    cities = ["Jaipur", "Alwar", "Udaipur", "Kota"]
+
+    while True:
         for road_id in road_ids:
             data = generate_traffic_reading(road_id)
             insert_traffic_reading(data)
@@ -119,8 +120,9 @@ while True:
             if accident_data:
                 insert_accident(accident_data)
 
-        weather_data = fetch_weather("Alwar")
-        insert_weather(weather_data)
+        for city in cities:
+            weather_data = fetch_weather(city)
+            insert_weather(weather_data)
 
         print("Waiting 10 seconds before next collection...\n")
         time.sleep(10)
