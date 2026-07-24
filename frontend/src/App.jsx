@@ -26,14 +26,14 @@ function WeatherIcon({ condition }) {
   }
 
   return (
-  <div className="weather-icon icon-cloud">
-    <div className="cloud-body">
-      <span className="cloud-bump bump-1"></span>
-      <span className="cloud-bump bump-2"></span>
-      <span className="cloud-bump bump-3"></span>
+    <div className="weather-icon icon-cloud">
+      <div className="cloud-body">
+        <span className="cloud-bump bump-1"></span>
+        <span className="cloud-bump bump-2"></span>
+        <span className="cloud-bump bump-3"></span>
+      </div>
     </div>
-  </div>
-)
+  )
 }
 
 function App() {
@@ -41,10 +41,31 @@ function App() {
   const [summary, setSummary] = useState([])
   const [accidents, setAccidents] = useState([])
   const [weather, setWeather] = useState(null)
+  const [states, setStates] = useState([])
+  const [cities, setCities] = useState([])
+  const [selectedState, setSelectedState] = useState('Rajasthan')
+  const [selectedCity, setSelectedCity] = useState('Jaipur')
+
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/states')
+      .then((response) => setStates(response.data))
+      .catch((error) => console.error('Error fetching states:', error))
+  }, [])
+
+  useEffect(() => {
+    axios.get(`http://127.0.0.1:8000/cities?state=${selectedState}`)
+      .then((response) => {
+        setCities(response.data)
+        if (response.data.length > 0 && !response.data.includes(selectedCity)) {
+          setSelectedCity(response.data[0])
+        }
+      })
+      .catch((error) => console.error('Error fetching cities:', error))
+  }, [selectedState])
 
   useEffect(() => {
     const fetchData = () => {
-      axios.get('http://127.0.0.1:8000/roads')
+      axios.get(`http://127.0.0.1:8000/roads?city=${selectedCity}`)
         .then((response) => setRoads(response.data))
         .catch((error) => console.error('Error fetching roads:', error))
 
@@ -56,7 +77,7 @@ function App() {
         .then((response) => setAccidents(response.data))
         .catch((error) => console.error('Error fetching accidents:', error))
 
-      axios.get('http://127.0.0.1:8000/weather-latest')
+      axios.get(`http://127.0.0.1:8000/weather-latest?city=${selectedCity}`)
         .then((response) => setWeather(response.data))
         .catch((error) => console.error('Error fetching weather:', error))
     }
@@ -64,7 +85,7 @@ function App() {
     fetchData()
     const interval = setInterval(fetchData, 10000)
     return () => clearInterval(interval)
-  }, [])
+  }, [selectedCity])
 
   const getCongestionLevel = (avgSpeed) => {
     if (avgSpeed < 20) return 'high'
@@ -77,14 +98,39 @@ function App() {
     return road ? road.road_name : `Road ${roadId}`
   }
 
+  const cityRoadIds = roads.map((r) => r.road_id)
   const recentAccidents = [...accidents]
+    .filter((a) => cityRoadIds.includes(a.road_id))
     .sort((a, b) => new Date(b.occurred_at) - new Date(a.occurred_at))
     .slice(0, 4)
 
   return (
     <div className="app">
       <header className="topbar">
-        <span className="topbar-label">JAIPUR TRAFFIC WATCH</span>
+        <span className="topbar-label">RAJASTHAN TRAFFIC WATCH</span>
+
+        <div className="selectors">
+          <select
+            className="city-select"
+            value={selectedState}
+            onChange={(e) => setSelectedState(e.target.value)}
+          >
+            {states.map((state) => (
+              <option key={state} value={state}>{state}</option>
+            ))}
+          </select>
+
+          <select
+            className="city-select"
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+          >
+            {cities.map((city) => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+          </select>
+        </div>
+
         <span className="topbar-status">● LIVE</span>
       </header>
 

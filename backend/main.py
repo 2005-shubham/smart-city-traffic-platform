@@ -130,10 +130,13 @@ def get_accidents():
     return accidents
 
 @app.get("/weather-latest")
-def get_weather_latest():
+def get_weather_latest(city: str = "Jaipur"):
     connection = get_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT temperature, condition, visibility, recorded_at FROM weather ORDER BY recorded_at DESC LIMIT 1;")
+    cursor.execute(
+        "SELECT temperature, condition, visibility, recorded_at FROM weather WHERE city = %s ORDER BY recorded_at DESC LIMIT 1;",
+        (city,)
+    )
     row = cursor.fetchone()
     cursor.close()
     connection.close()
